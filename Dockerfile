@@ -1,35 +1,40 @@
-FROM fedora
+FROM ubuntu:14.04
 MAINTAINER "Antonia Aguado Mercado" <nomail@gmail.com> 
+ENV DEBIAN_FRONTEND noninteractive
+COPY bin/dfg.sh /usr/local/bin/dfg.sh
 
-#installs
-RUN dnf install -y procps openldap openldap-servers openldap-clients krb5-workstation krb5-server-ldap cyrus-sasl-gssapi cyrus-sasl-ldap nss-pam-ldapd ; exit 0
-# directoris
-RUN mkdir /opt/docker
-RUN mkdir /var/tmp/home
-RUN mkdir /var/tmp/home/1asix
-RUN mkdir /var/tmp/home/2asix
-#Copy github to dockerhub build
-COPY scripts /scripts/
-COPY files /opt/docker
-RUN cp /opt/docker/ns* /etc/
-RUN cp -f /opt/docker/ldap.conf /etc/openldap/
-RUN cp -f /opt/docker/krb5.conf /etc/
-#Copying tls files for SSL
-#RUN cp /opt/docker/ca_server.pem /etc/openldap/certs/
-RUN cp /opt/docker/ldapcert.pem /etc/openldap/certs/
-RUN cp /opt/docker/ldapserver.pem /etc/openldap/certs/
-RUN cp /opt/docker/cacert.pem /etc/ssl/certs/
-RUN chmod 400 /etc/openldap/certs/ldapserver.pem
-#RUN cp /opt/docker/ldap_server.key /etc/openldap/certs/
-#RUN chown ldap.ldap /etc/openldap/certs/*
-RUN cp /opt/docker/krb5.keytab /etc/
-RUN chmod 640 /etc/krb5.keytab
-RUN setfacl -m u:ldap:r /etc/krb5.keytab
-#RUN setfacl -m u:ldap:r /etc/pki/tls/private/slapd.pem
-RUN cp /usr/share/doc/krb5-server-ldap/kerberos.schema /etc/openldap/schema/
-#COPY configs /etc/
-#make executable and execute
-#RUN /usr/bin/chmod +x /scripts/startup-slapd.sh & bash /scripts/startup-slapd.sh ; exit 0
-#VOLUME ["/data"] 
-ENTRYPOINT  ["/bin/bash", "/scripts/startup-slapd.sh"]
-EXPOSE 25 143 587 993 4190 8001 8002 9001 389
+RUN locale-gen en_US.UTF-8 && \
+    apt-get update && apt-get install wget -y && \
+    wget http://repo.zabbix.com/zabbix/3.2/ubuntu/pool/main/z/zabbix-release/zabbix-release_3.2-1+trusty_all.deb && \
+    dpkg -i zabbix-release_3.2-1+trusty_all.deb && \
+    apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install  vim apache2 openssh-server supervisor zabbix-agent zabbix-server-mysql zabbix-frontend-php  php5-mysql dos2unix -y && \
+    apt-get clean && \
+    rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/* && \
+
+    dos2unix /usr/local/bin/dfg.sh &&\
+    chmod +x /usr/local/bin/dfg.sh && \
+    a2enconf zabbix.conf && \
+    chmod -R 0777  /etc/zabbix && \
+    mkdir /var/run/zabbix && \
+    chmod -R 0777 /var/run/zabbix && \
+    /bin/bash -c "/usr/bin/mysqld_safe &" && \
+    sleep 5 && \
+    mysql -e "create user 'zabbix'@'localhost';" && \
+    mysql -e "create database zabbix;" && \
+    mysql -e "grant all privileges on zabbix.* to 'zabbix'@'localhost';" && \
+    mysql -e "flush privileges;" && \
+    cd /usr/share/doc/zabbix-server-mysql && zcat create.sql.gz | mysql -uroot zabbix 
+
+ENV NOTVISIBLE "in users profile"
+#-------------------------------------------------------------------------------------------------------
+
+COPY conf/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY conf/zabbix.conf /etc/apache2/conf-available/zabbix.conf
+# COPY conf/zabbix_server.conf /etc/zabbix/zabbix_server.conf
+
+VOLUME /var/lib/mysql
+
+EXPOSE 10051 22 80 9001 3306
+CMD ["/usr/bin/supervisord"]    
