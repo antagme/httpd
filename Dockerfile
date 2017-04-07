@@ -1,7 +1,7 @@
 FROM ubuntu:14.04
 MAINTAINER "Antonia Aguado Mercado" <nomail@gmail.com> 
 ENV DEBIAN_FRONTEND noninteractive
-COPY bin/dfg.sh /usr/local/bin/dfg.sh
+COPY /scripts/dfg.sh /usr/local/bin/dfg.sh
 
 RUN locale-gen en_US.UTF-8 && \
     apt-get update && apt-get install wget -y && \
