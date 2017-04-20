@@ -15,6 +15,7 @@ RUN locale-gen en_US.UTF-8 && \
     rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/* && \
     
     dos2unix /usr/local/bin/dfg.sh &&\
+    dos2unix /var/tmp/zabbix.backup &&\
     chmod +x /usr/local/bin/dfg.sh && \
     a2enconf zabbix.conf && \
     chmod -R 0777  /etc/zabbix && \
