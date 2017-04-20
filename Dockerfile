@@ -25,7 +25,7 @@ RUN locale-gen en_US.UTF-8 && \
     sleep 5 && \
     mysql -e "create user 'zabbix'@'localhost';" && \
     mysql -e "create database zabbix;" && \
-    mysql -uroot zabbix < /var/tmp/zabbix.backup
+    mysql -uroot zabbix < /var/tmp/zabbix.backup && \
     mysql -e "grant all privileges on zabbix.* to 'zabbix'@'localhost';" && \
     mysql -e "flush privileges;" 
     
