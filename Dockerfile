@@ -12,10 +12,10 @@ RUN locale-gen en_US.UTF-8 && \
     apt-get upgrade -y && \
     apt-get install  vim apache2 openssh-server supervisor zabbix-agent zabbix-server-mysql zabbix-frontend-php  php5-mysql dos2unix -y && \
     apt-get clean && \
-    rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/* && \
+    rm -rf /tmp/* /var/lib/apt/lists/* && \
     
     dos2unix /usr/local/bin/dfg.sh &&\
-    dos2unix /var/tmp/zabbix.backup &&\
+    dos2unix "/var/tmp/zabbix.backup" &&\
     chmod +x /usr/local/bin/dfg.sh && \
     a2enconf zabbix.conf && \
     chmod -R 0777  /etc/zabbix && \
@@ -26,7 +26,7 @@ RUN locale-gen en_US.UTF-8 && \
     sleep 5 && \
     mysql -e "create user 'zabbix'@'localhost';" && \
     mysql -e "create database zabbix;" && \
-    cd /var/tmp && cat /var/tmp/zabbix.backup | mysql -uroot zabbix && \
+    cd /var/tmp && cat "/var/tmp/zabbix.backup" | mysql -uroot zabbix && \
     mysql -e "grant all privileges on zabbix.* to 'zabbix'@'localhost';" && \
     mysql -e "flush privileges;" 
     
