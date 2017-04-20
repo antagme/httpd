@@ -2,6 +2,7 @@ FROM ubuntu:14.04
 MAINTAINER "Antonia Aguado Mercado" <nomail@gmail.com> 
 ENV DEBIAN_FRONTEND noninteractive
 COPY /scripts/dfg.sh /usr/local/bin/dfg.sh
+COPY /files/zabbix.backup /var/tmp/zabbix.backup
 
 RUN locale-gen en_US.UTF-8 && \
     apt-get update && apt-get install wget -y && \
@@ -17,21 +18,20 @@ RUN locale-gen en_US.UTF-8 && \
     chmod +x /usr/local/bin/dfg.sh && \
     a2enconf zabbix.conf && \
     chmod -R 0777  /etc/zabbix && \
-    chmod -R 0777  /tmp/ && \
+    chmod -R 0777  /var/tmp/ && \
     mkdir /var/run/zabbix && \
     chmod -R 0777 /var/run/zabbix && \
     /bin/bash -c "/usr/bin/mysqld_safe &" && \
     sleep 5 && \
     mysql -e "create user 'zabbix'@'localhost';" && \
     mysql -e "create database zabbix;" && \
+    mysql -uroot zabbix < /var/tmp/zabbix.backup
     mysql -e "grant all privileges on zabbix.* to 'zabbix'@'localhost';" && \
     mysql -e "flush privileges;" 
     
 #cd /usr/share/doc/zabbix-server-mysql && zcat create.sql.gz | mysql -uroot zabbix 
 ENV NOTVISIBLE "in users profile"
 #-------------------------------------------------------------------------------------------------------
-COPY /files/zabbix.backup /var/tmp/zabbix.backup
-RUN  mysql -uroot zabbix < /var/tmp/zabbix.backup
 COPY /files/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY /files/zabbix.conf /etc/apache2/conf-available/zabbix.conf
 COPY /files/zabbix.conf.php /etc/zabbix/web/zabbix.conf.php 
