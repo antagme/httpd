@@ -31,7 +31,8 @@ ENV NOTVISIBLE "in users profile"
 #-------------------------------------------------------------------------------------------------------
 
 COPY /files/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY /files//zabbix.conf /etc/apache2/conf-available/zabbix.conf
+COPY /files/zabbix.conf /etc/apache2/conf-available/zabbix.conf
+COPY /files/zabbix.conf.php /etc/zabbix/web/zabbix.conf.php 
 # COPY conf/zabbix_server.conf /etc/zabbix/zabbix_server.conf
 
 VOLUME /var/lib/mysql
