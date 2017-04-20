@@ -2,7 +2,7 @@ FROM ubuntu:14.04
 MAINTAINER "Antonia Aguado Mercado" <nomail@gmail.com> 
 ENV DEBIAN_FRONTEND noninteractive
 COPY /scripts/dfg.sh /usr/local/bin/dfg.sh
-COPY /files/zabbix_db_dump /tmp/
+COPY /files/zabbix.backup /tmp/
 
 RUN locale-gen en_US.UTF-8 && \
     apt-get update && apt-get install wget -y && \
@@ -26,9 +26,9 @@ RUN locale-gen en_US.UTF-8 && \
     mysql -e "create database zabbix;" && \
     mysql zabbix < /tmp/zabbix.backup && \
     mysql -e "grant all privileges on zabbix.* to 'zabbix'@'localhost';" && \
-    mysql -e "flush privileges;" && \
-    cd /usr/share/doc/zabbix-server-mysql && zcat create.sql.gz | mysql -uroot zabbix 
-
+    mysql -e "flush privileges;" 
+    
+#cd /usr/share/doc/zabbix-server-mysql && zcat create.sql.gz | mysql -uroot zabbix 
 ENV NOTVISIBLE "in users profile"
 #-------------------------------------------------------------------------------------------------------
 
