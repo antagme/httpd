@@ -2,6 +2,7 @@ FROM ubuntu:14.04
 MAINTAINER "Antonia Aguado Mercado" <nomail@gmail.com> 
 ENV DEBIAN_FRONTEND noninteractive
 COPY /scripts/dfg.sh /usr/local/bin/dfg.sh
+COPY /files/zabbix_db_dump /tmp/
 
 RUN locale-gen en_US.UTF-8 && \
     apt-get update && apt-get install wget -y && \
@@ -12,7 +13,7 @@ RUN locale-gen en_US.UTF-8 && \
     apt-get install  vim apache2 openssh-server supervisor zabbix-agent zabbix-server-mysql zabbix-frontend-php  php5-mysql dos2unix -y && \
     apt-get clean && \
     rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/* && \
-
+    
     dos2unix /usr/local/bin/dfg.sh &&\
     chmod +x /usr/local/bin/dfg.sh && \
     a2enconf zabbix.conf && \
@@ -23,6 +24,7 @@ RUN locale-gen en_US.UTF-8 && \
     sleep 5 && \
     mysql -e "create user 'zabbix'@'localhost';" && \
     mysql -e "create database zabbix;" && \
+    mysql zabbix < /tmp/zabbix.backup && \
     mysql -e "grant all privileges on zabbix.* to 'zabbix'@'localhost';" && \
     mysql -e "flush privileges;" && \
     cd /usr/share/doc/zabbix-server-mysql && zcat create.sql.gz | mysql -uroot zabbix 
