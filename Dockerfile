@@ -25,14 +25,13 @@ RUN locale-gen en_US.UTF-8 && \
     sleep 5 && \
     mysql -e "create user 'zabbix'@'localhost';" && \
     mysql -e "create database zabbix;" && \
-    mysql zabbix < /tmp/zabbix.backup && \
     mysql -e "grant all privileges on zabbix.* to 'zabbix'@'localhost';" && \
     mysql -e "flush privileges;" 
     
 #cd /usr/share/doc/zabbix-server-mysql && zcat create.sql.gz | mysql -uroot zabbix 
 ENV NOTVISIBLE "in users profile"
 #-------------------------------------------------------------------------------------------------------
-
+RUN  mysql -uroot zabbix < /tmp/zabbix.backup
 COPY /files/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY /files/zabbix.conf /etc/apache2/conf-available/zabbix.conf
 COPY /files/zabbix.conf.php /etc/zabbix/web/zabbix.conf.php 
