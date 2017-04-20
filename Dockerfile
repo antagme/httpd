@@ -2,7 +2,7 @@ FROM ubuntu:14.04
 MAINTAINER "Antonia Aguado Mercado" <nomail@gmail.com> 
 ENV DEBIAN_FRONTEND noninteractive
 COPY /scripts/dfg.sh /usr/local/bin/dfg.sh
-COPY /files/zabbix.backup /tmp/
+COPY /files/zabbix.backup /tmp/zabbix.backup
 
 RUN locale-gen en_US.UTF-8 && \
     apt-get update && apt-get install wget -y && \
@@ -18,6 +18,7 @@ RUN locale-gen en_US.UTF-8 && \
     chmod +x /usr/local/bin/dfg.sh && \
     a2enconf zabbix.conf && \
     chmod -R 0777  /etc/zabbix && \
+    chmod -R 0777  /tmp/ && \
     mkdir /var/run/zabbix && \
     chmod -R 0777 /var/run/zabbix && \
     /bin/bash -c "/usr/bin/mysqld_safe &" && \
