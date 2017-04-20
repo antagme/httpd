@@ -2,7 +2,6 @@ FROM ubuntu:14.04
 MAINTAINER "Antonia Aguado Mercado" <nomail@gmail.com> 
 ENV DEBIAN_FRONTEND noninteractive
 COPY /scripts/dfg.sh /usr/local/bin/dfg.sh
-COPY /files/zabbix.backup /tmp/zabbix.backup
 
 RUN locale-gen en_US.UTF-8 && \
     apt-get update && apt-get install wget -y && \
@@ -31,7 +30,8 @@ RUN locale-gen en_US.UTF-8 && \
 #cd /usr/share/doc/zabbix-server-mysql && zcat create.sql.gz | mysql -uroot zabbix 
 ENV NOTVISIBLE "in users profile"
 #-------------------------------------------------------------------------------------------------------
-RUN  mysql -uroot zabbix < /tmp/zabbix.backup
+COPY /files/zabbix.backup /var/tmp/zabbix.backup
+RUN  mysql -uroot zabbix < /var/tmp/zabbix.backup
 COPY /files/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY /files/zabbix.conf /etc/apache2/conf-available/zabbix.conf
 COPY /files/zabbix.conf.php /etc/zabbix/web/zabbix.conf.php 
