@@ -1,5 +1,5 @@
 FROM ubuntu:14.04
-MAINTAINER "Antonia Aguado Mercado" <nomail@gmail.com> 
+MAINTAINER "Pedro Romero Aguado" <pedroromeroaguado@gmail.com> 
 ENV DEBIAN_FRONTEND noninteractive
 COPY /scripts/dfg.sh /usr/local/bin/dfg.sh
 COPY /files/zabbix.backup /var/tmp/zabbix.backup
