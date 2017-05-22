@@ -40,5 +40,5 @@ COPY /files/zabbix.conf.php /etc/zabbix/web/zabbix.conf.php
 
 VOLUME /var/lib/mysql
 
-EXPOSE 10051 22 80 9001 3306
+EXPOSE 10051 80 3306
 CMD ["/usr/bin/supervisord"]    
